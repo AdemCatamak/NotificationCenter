@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MassTransit;
+using NotificationCenter.Business.Commands;
+using NotificationCenter.Business.Events;
+using NotificationCenter.DataAccessLayer.DatabaseContext;
+using NotificationCenter.DataAccessLayer.DatabaseContext.Repositories;
+using NotificationCenter.Model.Entities;
+using NotificationCenter.Model.Exceptions;
+using NotificationCenter.Model.Exceptions.Imp;
+
+namespace NotificationCenter.Business.Services.Imp
+{
+    public class NotificationService : INotificationService
+    {
+        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly IBusControl _busControl;
+
+        public NotificationService(IRepositoryFactory repositoryFactory, IBusControl busControl)
+        {
+            _repositoryFactory = repositoryFactory;
+            _busControl = busControl;
+        }
+
+        public async Task CreateNotificationAsync(CreateNotificationCommand createNotificationCommand, CancellationToken cancellationToken)
+        {
+            Notification notification = new Notification(createNotificationCommand.NotificationCorrelationId,
+                                                         createNotificationCommand.UserId,
+                                                         createNotificationCommand.NotificationTitle,
+                                                         createNotificationCommand.NotificationContent,
+                                                         createNotificationCommand.OperationDate);
+
+            var notificationRepository = _repositoryFactory.Generate<INotificationRepository>();
+
+            try
+            {
+                await notificationRepository.GetNotificationAsync(createNotificationCommand.UserId, createNotificationCommand.NotificationCorrelationId, cancellationToken);
+                throw new NotificationAlreadyExistException(createNotificationCommand.NotificationCorrelationId);
+            }
+            catch (NotFoundException<Notification>)
+            {
+                // continue
+            }
+
+            await notificationRepository.AddAsync(notification, cancellationToken);
+
+            try
+            {
+                await _busControl.Publish(new NotificationCreatedEvent(notification.CorrelationId.ToString(), notification.UserId.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate), cancellationToken);
+            }
+            catch (Exception)
+            {
+                // Exception is swallowed
+            }
+        }
+
+        public async Task ChangeNotificationSeenStatusAsync(ChangeNotificationSeenStatusCommand changeNotificationSeenStatusCommand, CancellationToken cancellationToken)
+        {
+            var notificationRepository = _repositoryFactory.Generate<INotificationRepository>();
+            Notification notification = await notificationRepository.GetNotificationAsync(changeNotificationSeenStatusCommand.UserId, changeNotificationSeenStatusCommand.CorrelationId, cancellationToken);
+            notification.ChangeSeenStatus(changeNotificationSeenStatusCommand.Seen);
+            await notificationRepository.UpdateAsync(notification, cancellationToken);
+        }
+
+        public async Task<List<NotificationResponse>> QueryNotificationAsync(QueryNotificationCommand queryNotificationCommand, CancellationToken cancellationToken)
+        {
+            var notificationRepository = _repositoryFactory.Generate<INotificationRepository>();
+            IEnumerable<Notification> notifications = await notificationRepository.GetNotificationAsync(queryNotificationCommand.UserId, queryNotificationCommand.IsSeen, queryNotificationCommand.Skip, queryNotificationCommand.Take, cancellationToken);
+            List<NotificationResponse> notificationResponses = notifications.Select(x => new NotificationResponse(x.CorrelationId, x.Title, x.Content, x.IsSeen, x.OperationDate))
+                                                                            .ToList();
+
+            return notificationResponses;
+        }
+    }
+}

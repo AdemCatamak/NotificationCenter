@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NotificationCenter.DataAccessLayer\NotificationCenter.DataAccessLayer.csproj" />
+        <ProjectReference Include="..\NotificationCenter.Model\NotificationCenter.Model.csproj" />
+    </ItemGroup>
+
+</Project>

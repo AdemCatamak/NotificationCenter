@@ -1,0 +1,22 @@
+using System;
+
+namespace NotificationCenter.Business.Events
+{
+    public class NotificationCreatedEvent
+    {
+        public string CorrelationId { get; private set; } = null!;
+        public string UserId { get; private set; } = null!;
+        public string Title { get; private set; } = null!;
+        public string Content { get; private set; } = null!;
+        public DateTime OperationDate { get; private set; }
+
+        public NotificationCreatedEvent(string correlationId, string userId, string title, string content, DateTime operationDate)
+        {
+            CorrelationId = correlationId;
+            UserId = userId;
+            Title = title;
+            Content = content;
+            OperationDate = operationDate;
+        }
+    }
+}
