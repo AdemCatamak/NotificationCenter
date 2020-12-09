@@ -21,6 +21,7 @@ using NotificationCenter.DataAccessLayer.DatabaseContext.MongoDbSection;
 using NotificationCenter.DataAccessLayer.IntegrationMessageBroker.ConfigModels;
 using NotificationCenter.DataAccessLayer.IntegrationMessageBroker.MassTransitSection.MassTransitConverters;
 using NotificationCenter.DataAccessLayer.IntegrationMessageBroker.MassTransitSection.MassTransitObservers;
+using NotificationCenter.Hubs;
 
 namespace NotificationCenter
 {
@@ -155,6 +156,8 @@ namespace NotificationCenter
             #endregion
 
             services.AddScoped<INotificationService, NotificationService>();
+
+            services.AddSignalR();
         }
 
         private void AddAs<TType>(IServiceCollection serviceCollection, Type baseType, ServiceLifetime serviceLifetime, params Assembly[] assemblies)
@@ -172,7 +175,11 @@ namespace NotificationCenter
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", ""); });
             app.UseRouting();
-            app.UseEndpoints(builder => builder.MapControllers());
+            app.UseEndpoints(builder =>
+                             {
+                                 builder.MapControllers();
+                                 builder.MapHub<NotificationHub>("notification-hub");
+                             });
         }
     }
 }
