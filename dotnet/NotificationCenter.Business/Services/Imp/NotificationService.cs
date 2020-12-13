@@ -49,7 +49,7 @@ namespace NotificationCenter.Business.Services.Imp
 
             try
             {
-                await _busControl.Publish(new NotificationCreatedEvent(notification.CorrelationId.ToString(), notification.UserId.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate), cancellationToken);
+                await _busControl.Publish(new NotificationCreatedEvent(notification.CorrelationId.ToString(), notification.UserId.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate, notification.IsSeen), cancellationToken);
             }
             catch (Exception)
             {
@@ -63,6 +63,15 @@ namespace NotificationCenter.Business.Services.Imp
             Notification notification = await notificationRepository.GetNotificationAsync(changeNotificationSeenStatusCommand.UserId, changeNotificationSeenStatusCommand.CorrelationId, cancellationToken);
             notification.ChangeSeenStatus(changeNotificationSeenStatusCommand.Seen);
             await notificationRepository.UpdateAsync(notification, cancellationToken);
+
+            try
+            {
+                await _busControl.Publish(new NotificationSeenStatusChangedEvent(notification.CorrelationId.ToString(), notification.UserId.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate, notification.IsSeen), cancellationToken);
+            }
+            catch (Exception)
+            {
+                // Exception is swallowed
+            }
         }
 
         public async Task<List<NotificationResponse>> QueryNotificationAsync(QueryNotificationCommand queryNotificationCommand, CancellationToken cancellationToken)

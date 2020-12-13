@@ -7,11 +7,11 @@ using NotificationCenter.Hubs;
 
 namespace NotificationCenter.Consumers
 {
-    public class NotificationCreatedConsumer : IConsumer<NotificationCreatedEvent>
+    public class NotificationCreatedInformConsumer : IConsumer<NotificationCreatedEvent>
     {
         private readonly IHubContext<NotificationHub> _hubContext;
 
-        public NotificationCreatedConsumer(IHubContext<NotificationHub> hubContext)
+        public NotificationCreatedInformConsumer(IHubContext<NotificationHub> hubContext)
         {
             _hubContext = hubContext;
         }

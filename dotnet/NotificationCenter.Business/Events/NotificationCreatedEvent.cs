@@ -9,14 +9,16 @@ namespace NotificationCenter.Business.Events
         public string Title { get; private set; } = null!;
         public string Content { get; private set; } = null!;
         public DateTime OperationDate { get; private set; }
+        public bool IsSeen { get; private set; }
 
-        public NotificationCreatedEvent(string correlationId, string userId, string title, string content, DateTime operationDate)
+        public NotificationCreatedEvent(string correlationId, string userId, string title, string content, DateTime operationDate, bool isSeen)
         {
             CorrelationId = correlationId;
             UserId = userId;
             Title = title;
             Content = content;
             OperationDate = operationDate;
+            IsSeen = isSeen;
         }
     }
 }
