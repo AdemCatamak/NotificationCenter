@@ -21,13 +21,13 @@ namespace NotificationCenter.Business.Commands
 
     public class NotificationResponse
     {
-        public NotificationCorrelationId CorrelationId { get; }
-        public NotificationTitle Title { get; }
-        public NotificationContent Content { get; }
+        public string CorrelationId { get; }
+        public string Title { get; }
+        public string Content { get; }
         public bool IsSeen { get; }
         public DateTime OperationDate { get; }
 
-        public NotificationResponse(NotificationCorrelationId correlationId, NotificationTitle title, NotificationContent content, bool isSeen, DateTime operationDate)
+        public NotificationResponse(string correlationId, string title, string content, bool isSeen, DateTime operationDate)
         {
             CorrelationId = correlationId;
             Title = title;

@@ -69,7 +69,7 @@ namespace NotificationCenter.Business.Services.Imp
         {
             var notificationRepository = _repositoryFactory.Generate<INotificationRepository>();
             IEnumerable<Notification> notifications = await notificationRepository.GetNotificationAsync(queryNotificationCommand.UserId, queryNotificationCommand.IsSeen, queryNotificationCommand.Skip, queryNotificationCommand.Take, cancellationToken);
-            List<NotificationResponse> notificationResponses = notifications.Select(x => new NotificationResponse(x.CorrelationId, x.Title, x.Content, x.IsSeen, x.OperationDate))
+            List<NotificationResponse> notificationResponses = notifications.Select(x => new NotificationResponse(x.CorrelationId.ToString(), x.Title.ToString(), x.Content.ToString(), x.IsSeen, x.OperationDate))
                                                                             .ToList();
 
             return notificationResponses;
