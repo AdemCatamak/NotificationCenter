@@ -3,13 +3,13 @@ using NotificationCenter.Model.Exceptions.Imp;
 
 namespace NotificationCenter.Model.ValueObjects
 {
-    public class UserId : ValueObject
+    public class Username : ValueObject
     {
         public string Value { get; private set; }
 
-        public UserId(string value)
+        public Username(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new UserIdEmptyException();
+            if (string.IsNullOrEmpty(value)) throw new UsernameEmptyException();
             Value = value;
         }
 

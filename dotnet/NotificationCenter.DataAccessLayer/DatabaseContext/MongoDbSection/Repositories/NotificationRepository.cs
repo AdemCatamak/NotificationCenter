@@ -27,9 +27,9 @@ namespace NotificationCenter.DataAccessLayer.DatabaseContext.MongoDbSection.Repo
             await DbSet.InsertOneAsync(notification, options: null, cancellationToken);
         }
 
-        public async Task<Notification> GetNotificationAsync(UserId userId, NotificationCorrelationId notificationCorrelationId, CancellationToken cancellationToken)
+        public async Task<Notification> GetNotificationAsync(Username username, NotificationCorrelationId notificationCorrelationId, CancellationToken cancellationToken)
         {
-            Notification? notification = await (await DbSet.FindAsync(x => x.UserId.Value == userId.Value && x.CorrelationId.Value == notificationCorrelationId.Value,
+            Notification? notification = await (await DbSet.FindAsync(x => x.Username.Value == username.Value && x.CorrelationId.Value == notificationCorrelationId.Value,
                                                                       new FindOptions<Notification>()
                                                                       {
                                                                           Skip = 0,
@@ -42,10 +42,10 @@ namespace NotificationCenter.DataAccessLayer.DatabaseContext.MongoDbSection.Repo
             return notification;
         }
 
-        public async Task<IEnumerable<Notification>> GetNotificationAsync(UserId userId, bool? isSeen, int skip, int take, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Notification>> GetNotificationAsync(Username username, bool? isSeen, int skip, int take, CancellationToken cancellationToken)
         {
             IMongoQueryable<Notification>? queryable = DbSet.AsQueryable();
-            queryable = queryable.Where(x => x.UserId.Value == userId.Value);
+            queryable = queryable.Where(x => x.Username.Value == username.Value);
             if (isSeen.HasValue)
                 queryable = queryable.Where(x => x.IsSeen == isSeen.Value);
 
@@ -60,7 +60,7 @@ namespace NotificationCenter.DataAccessLayer.DatabaseContext.MongoDbSection.Repo
 
         public async Task UpdateAsync(Notification notification, CancellationToken cancellationToken)
         {
-            await DbSet.ReplaceOneAsync(x => x.UserId.Value == notification.UserId.Value && x.CorrelationId.Value == notification.CorrelationId.Value,
+            await DbSet.ReplaceOneAsync(x => x.Username.Value == notification.Username.Value && x.CorrelationId.Value == notification.CorrelationId.Value,
                                         notification,
                                         new ReplaceOptions {IsUpsert = false},
                                         cancellationToken);

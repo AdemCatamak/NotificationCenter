@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json;
@@ -55,6 +58,28 @@ namespace NotificationCenter
                                    {
                                        c.SwaggerDoc("v1", new OpenApiInfo());
                                        c.CustomSchemaIds(type => type.ToString());
+
+                                       c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                                                                         {
+                                                                             Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                                                                             Name = "Authorization",
+                                                                             In = ParameterLocation.Header,
+                                                                             Type = SecuritySchemeType.ApiKey
+                                                                         });
+                                       c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                                                                {
+                                                                    {
+                                                                        new OpenApiSecurityScheme
+                                                                        {
+                                                                            Reference = new OpenApiReference
+                                                                                        {
+                                                                                            Type = ReferenceType.SecurityScheme,
+                                                                                            Id = "Bearer"
+                                                                                        },
+                                                                        },
+                                                                        new List<string>()
+                                                                    }
+                                                                });
                                    });
 
             #endregion
@@ -155,7 +180,30 @@ namespace NotificationCenter
 
             #endregion
 
+            #region AddAuth
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                                  options =>
+                                  {
+                                      options.RequireHttpsMetadata = false;
+                                      options.SaveToken = true;
+                                      options.TokenValidationParameters = new TokenValidationParameters
+                                                                          {
+                                                                              ValidateIssuer = true,
+                                                                              ValidateAudience = true,
+                                                                              ValidateLifetime = true,
+                                                                              ValidateIssuerSigningKey = true,
+                                                                              ValidIssuer = JwtAccessTokenGenerator.JWT_ISSUER,
+                                                                              ValidAudience = JwtAccessTokenGenerator.JWT_AUDIENCE,
+                                                                              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtAccessTokenGenerator.JWT_KEY))
+                                                                          };
+                                  });
+
+            #endregion
+
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IAccessTokenGenerator, JwtAccessTokenGenerator>();
 
             services.AddSignalR();
         }
@@ -175,6 +223,8 @@ namespace NotificationCenter
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", ""); });
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(builder =>
                              {
                                  builder.MapControllers();

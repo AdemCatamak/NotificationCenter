@@ -8,11 +8,12 @@ import { FormsModule } from '@angular/forms';
 
 import { NotificationListComponent } from './notification-list/notification-list.component';
 import { AppNotificationService } from './notification-list/app-notification.service';
+import { AppAccessTokenService } from './app-access-token/app-access-token.service';
 
 @NgModule({
   declarations: [AppComponent, NotificationListComponent],
   imports: [BrowserModule, HttpClientModule, FormsModule, AppRoutingModule],
-  providers: [AppNotificationService],
+  providers: [AppNotificationService, AppAccessTokenService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

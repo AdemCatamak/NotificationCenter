@@ -7,17 +7,17 @@ namespace NotificationCenter.Model.Entities
     {
         public string Id => CorrelationId.Value;
         public NotificationCorrelationId CorrelationId { get; private set; } = null!;
-        public UserId UserId { get; private set; } = null!;
+        public Username Username { get; private set; } = null!;
         public NotificationTitle Title { get; private set; } = null!;
         public NotificationContent Content { get; private set; } = null!;
         public bool IsSeen { get; private set; }
         public DateTime OperationDate { get; private set; }
         public DateTime CreatedOn { get; private set; }
 
-        public Notification(NotificationCorrelationId correlationId, UserId userId, NotificationTitle title, NotificationContent content, DateTime operationDate)
+        public Notification(NotificationCorrelationId correlationId, Username username, NotificationTitle title, NotificationContent content, DateTime operationDate)
         {
             CorrelationId = correlationId;
-            UserId = userId;
+            Username = username;
             Title = title;
             Content = content;
             OperationDate = operationDate;
@@ -25,10 +25,10 @@ namespace NotificationCenter.Model.Entities
             CreatedOn = DateTime.UtcNow;
         }
 
-        public Notification(NotificationCorrelationId correlationId, UserId userId, NotificationTitle title, NotificationContent content, bool isSeen, DateTime operationDate, DateTime createdOn)
+        public Notification(NotificationCorrelationId correlationId, Username username, NotificationTitle title, NotificationContent content, bool isSeen, DateTime operationDate, DateTime createdOn)
         {
             CorrelationId = correlationId;
-            UserId = userId;
+            Username = username;
             Title = title;
             Content = content;
             IsSeen = isSeen;

@@ -22,12 +22,12 @@ namespace NotificationCenter.Consumers
         {
             OrderShippedEvent orderShippedEvent = context.Message;
 
-            NotificationCorrelationId notificationCorrelationId = new NotificationCorrelationId($"{orderShippedEvent.UserId}-{orderShippedEvent.OrderId}-{orderShippedEvent.ShipmentId}");
-            UserId userId = new UserId(orderShippedEvent.UserId);
+            NotificationCorrelationId notificationCorrelationId = new NotificationCorrelationId($"{orderShippedEvent.Username}-{orderShippedEvent.OrderId}-{orderShippedEvent.ShipmentId}");
+            Username username = new Username(orderShippedEvent.Username);
             NotificationTitle notificationTitle = new NotificationTitle($"Order Shipped");
             NotificationContent notificationContent = new NotificationContent($"#{orderShippedEvent.OrderId} order is shipped at {orderShippedEvent.ShipmentDate}");
 
-            CreateNotificationCommand createNotificationCommand = new CreateNotificationCommand(notificationCorrelationId, userId, notificationTitle, notificationContent, orderShippedEvent.ShipmentDate);
+            CreateNotificationCommand createNotificationCommand = new CreateNotificationCommand(notificationCorrelationId, username, notificationTitle, notificationContent, orderShippedEvent.ShipmentDate);
             try
             {
                 await _notificationService.CreateNotificationAsync(createNotificationCommand, CancellationToken.None);

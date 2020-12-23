@@ -4,14 +4,14 @@ namespace NotificationCenter.Business.Commands
 {
     public class ChangeNotificationSeenStatusCommand
     {
-        public UserId UserId { get; }
+        public Username Username { get; }
         public NotificationCorrelationId CorrelationId { get; }
 
         public bool Seen { get; private set; }
 
-        public ChangeNotificationSeenStatusCommand(UserId userId, NotificationCorrelationId correlationId, bool seen)
+        public ChangeNotificationSeenStatusCommand(Username username, NotificationCorrelationId correlationId, bool seen)
         {
-            UserId = userId;
+            Username = username;
             CorrelationId = correlationId;
             Seen = seen;
         }

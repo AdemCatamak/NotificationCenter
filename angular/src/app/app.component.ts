@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AppAccessTokenService } from './app-access-token/app-access-token.service';
 import { AppNotification } from './notification-list/app-notification';
 import { AppNotificationService } from './notification-list/app-notification.service';
 
@@ -10,32 +11,52 @@ import { AppNotificationService } from './notification-list/app-notification.ser
 export class AppComponent {
   title = 'angular';
 
-  userId = '';
+  username = '';
   notificationCollection: AppNotification[] = [];
 
-  constructor(private notificationService: AppNotificationService) {
+  constructor(
+    private notificationService: AppNotificationService,
+    private accessTokenService: AppAccessTokenService
+  ) {
     this.notificationCollection = new Array<AppNotification>();
   }
 
-  ChangeUserId() {
-    console.log('userId :' + this.userId);
-    if (this.userId == null || this.userId == undefined) {
-      this.userId = '';
+  ChangeUsername() {
+    console.log('username :' + this.username);
+    if (this.username == null || this.username == undefined) {
+      this.username = '';
     }
 
-    if (this.userId != '') {
-      this.notificationService.GetNotifications(this.userId).subscribe(
+    if (this.username != '') {
+      this.accessTokenService.GetAccessToken(this.username).subscribe(
         (res) => {
-          this.notificationCollection = res;
+          this.GetNotifications(res.username, res.value);
         },
         (er) => {
-          if (er.status == 404) {
-            this.notificationCollection = [];
-          } else {
-            console.error(er);
-          }
+          console.log(er);
         }
       );
     }
+  }
+
+  private GetNotifications(username: string, accessToken: string) {
+    this.notificationService.GetNotifications(username, accessToken).subscribe(
+      (res) => {
+        this.notificationCollection = res;
+        this.StartObserveNotifications(accessToken);
+      },
+      (er) => {
+        if (er.status == 404) {
+          this.notificationCollection = [];
+          this.StartObserveNotifications(accessToken);
+        } else {
+          console.error(er);
+        }
+      }
+    );
+  }
+
+  private StartObserveNotifications(accessToken: string) {
+    console.log('works');
   }
 }

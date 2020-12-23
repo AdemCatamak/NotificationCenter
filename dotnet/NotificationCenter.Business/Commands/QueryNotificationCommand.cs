@@ -5,14 +5,14 @@ namespace NotificationCenter.Business.Commands
 {
     public class QueryNotificationCommand
     {
-        public UserId UserId { get; }
+        public Username Username { get; }
         public bool? IsSeen { get; }
         public int Skip { get; }
         public int Take { get; }
 
-        public QueryNotificationCommand(UserId userId, bool? isSeen, int skip, int take)
+        public QueryNotificationCommand(Username username, bool? isSeen, int skip, int take)
         {
-            UserId = userId;
+            Username = username;
             IsSeen = isSeen;
             Skip = skip;
             Take = take;

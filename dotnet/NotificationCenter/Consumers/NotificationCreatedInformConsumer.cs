@@ -21,7 +21,7 @@ namespace NotificationCenter.Consumers
             NotificationCreatedEvent notificationCreatedEvent = context.Message;
             string serializedNotification = JsonConvert.SerializeObject(notificationCreatedEvent);
 
-            await _hubContext.Clients.User(notificationCreatedEvent.UserId)
+            await _hubContext.Clients.User(notificationCreatedEvent.Username)
                              .SendAsync(NotificationHub.GET_NOTIFICATION, serializedNotification)
                              .ConfigureAwait(false);
         }

@@ -22,12 +22,12 @@ namespace NotificationCenter.Consumers
         {
             OrderApprovedEvent orderApprovedEvent = context.Message;
 
-            NotificationCorrelationId notificationCorrelationId = new NotificationCorrelationId($"{orderApprovedEvent.UserId}-{orderApprovedEvent.OrderId}");
-            UserId userId = new UserId(orderApprovedEvent.UserId);
+            NotificationCorrelationId notificationCorrelationId = new NotificationCorrelationId($"{orderApprovedEvent.Username}-{orderApprovedEvent.OrderId}");
+            Username username = new Username(orderApprovedEvent.Username);
             NotificationTitle notificationTitle = new NotificationTitle($"Order Approved");
             NotificationContent notificationContent = new NotificationContent($"#{orderApprovedEvent.OrderId} order is approved at {orderApprovedEvent.OrderApprovedDate}");
 
-            CreateNotificationCommand createNotificationCommand = new CreateNotificationCommand(notificationCorrelationId, userId, notificationTitle, notificationContent, orderApprovedEvent.OrderApprovedDate);
+            CreateNotificationCommand createNotificationCommand = new CreateNotificationCommand(notificationCorrelationId, username, notificationTitle, notificationContent, orderApprovedEvent.OrderApprovedDate);
             try
             {
                 await _notificationService.CreateNotificationAsync(createNotificationCommand, CancellationToken.None);

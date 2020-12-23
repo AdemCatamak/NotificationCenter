@@ -21,7 +21,7 @@ namespace NotificationCenter.Consumers
             NotificationSeenStatusChangedEvent notificationSeenStatusChangedEvent = context.Message;
             string serializedNotification = JsonConvert.SerializeObject(notificationSeenStatusChangedEvent);
 
-            await _hubContext.Clients.User(notificationSeenStatusChangedEvent.UserId)
+            await _hubContext.Clients.User(notificationSeenStatusChangedEvent.Username)
                              .SendAsync(NotificationHub.UPDATE_NOTIFICATION_SEEN_STATUS, serializedNotification)
                              .ConfigureAwait(false);
         }

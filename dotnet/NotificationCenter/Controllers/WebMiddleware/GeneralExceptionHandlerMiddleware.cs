@@ -52,6 +52,11 @@ namespace NotificationCenter.Controllers.WebMiddleware
                 httpStatusCode = HttpStatusCode.Conflict;
                 logLevel = LogLevel.Information;
             }
+            else if (exception is ForbiddenException)
+            {
+                httpStatusCode = HttpStatusCode.Forbidden;
+                logLevel = LogLevel.Information;
+            }
             else
             {
                 message = "Unknown error Occurs";

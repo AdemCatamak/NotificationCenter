@@ -10,9 +10,9 @@ namespace NotificationCenter.DataAccessLayer.DatabaseContext.Repositories
     {
         Task AddAsync(Notification notification, CancellationToken cancellationToken);
 
-        Task<Notification> GetNotificationAsync(UserId userId, NotificationCorrelationId notificationCorrelationId, CancellationToken cancellationToken);
+        Task<Notification> GetNotificationAsync(Username username, NotificationCorrelationId notificationCorrelationId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<Notification>> GetNotificationAsync(UserId userId, bool? isSeen, int skip, int take, CancellationToken cancellationToken);
+        Task<IEnumerable<Notification>> GetNotificationAsync(Username username, bool? isSeen, int skip, int take, CancellationToken cancellationToken);
         Task UpdateAsync(Notification notification, CancellationToken cancellationToken);
     }
 }

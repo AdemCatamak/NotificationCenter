@@ -23,7 +23,7 @@ namespace NotificationCenter.DataAccessLayer.DatabaseContext.MongoDbSection.Mong
             IMongoCollection<Notification> notifications = database.GetCollection<Notification>(nameof(Notification));
 
             var options = new CreateIndexOptions {Unique = true};
-            IndexKeysDefinition<Notification> correlationIdIndexDefinition = $"{{ {nameof(Notification.UserId)}: 1, {nameof(Notification.CorrelationId)}: 1}}";
+            IndexKeysDefinition<Notification> correlationIdIndexDefinition = $"{{ {nameof(Notification.Username)}: 1, {nameof(Notification.CorrelationId)}: 1}}";
             var correlationIdIndex = new CreateIndexModel<Notification>(correlationIdIndexDefinition, options);
 
             await notifications.Indexes.CreateOneAsync(correlationIdIndex, cancellationToken: cancellationToken);

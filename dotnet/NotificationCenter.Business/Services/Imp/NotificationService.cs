@@ -28,7 +28,7 @@ namespace NotificationCenter.Business.Services.Imp
         public async Task CreateNotificationAsync(CreateNotificationCommand createNotificationCommand, CancellationToken cancellationToken)
         {
             Notification notification = new Notification(createNotificationCommand.NotificationCorrelationId,
-                                                         createNotificationCommand.UserId,
+                                                         createNotificationCommand.Username,
                                                          createNotificationCommand.NotificationTitle,
                                                          createNotificationCommand.NotificationContent,
                                                          createNotificationCommand.OperationDate);
@@ -37,7 +37,7 @@ namespace NotificationCenter.Business.Services.Imp
 
             try
             {
-                await notificationRepository.GetNotificationAsync(createNotificationCommand.UserId, createNotificationCommand.NotificationCorrelationId, cancellationToken);
+                await notificationRepository.GetNotificationAsync(createNotificationCommand.Username, createNotificationCommand.NotificationCorrelationId, cancellationToken);
                 throw new NotificationAlreadyExistException(createNotificationCommand.NotificationCorrelationId);
             }
             catch (NotFoundException<Notification>)
@@ -49,7 +49,7 @@ namespace NotificationCenter.Business.Services.Imp
 
             try
             {
-                await _busControl.Publish(new NotificationCreatedEvent(notification.CorrelationId.ToString(), notification.UserId.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate, notification.IsSeen), cancellationToken);
+                await _busControl.Publish(new NotificationCreatedEvent(notification.CorrelationId.ToString(), notification.Username.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate, notification.IsSeen), cancellationToken);
             }
             catch (Exception)
             {
@@ -60,13 +60,13 @@ namespace NotificationCenter.Business.Services.Imp
         public async Task ChangeNotificationSeenStatusAsync(ChangeNotificationSeenStatusCommand changeNotificationSeenStatusCommand, CancellationToken cancellationToken)
         {
             var notificationRepository = _repositoryFactory.Generate<INotificationRepository>();
-            Notification notification = await notificationRepository.GetNotificationAsync(changeNotificationSeenStatusCommand.UserId, changeNotificationSeenStatusCommand.CorrelationId, cancellationToken);
+            Notification notification = await notificationRepository.GetNotificationAsync(changeNotificationSeenStatusCommand.Username, changeNotificationSeenStatusCommand.CorrelationId, cancellationToken);
             notification.ChangeSeenStatus(changeNotificationSeenStatusCommand.Seen);
             await notificationRepository.UpdateAsync(notification, cancellationToken);
 
             try
             {
-                await _busControl.Publish(new NotificationSeenStatusChangedEvent(notification.CorrelationId.ToString(), notification.UserId.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate, notification.IsSeen), cancellationToken);
+                await _busControl.Publish(new NotificationSeenStatusChangedEvent(notification.CorrelationId.ToString(), notification.Username.ToString(), notification.Title.ToString(), notification.Content.ToString(), notification.OperationDate, notification.IsSeen), cancellationToken);
             }
             catch (Exception)
             {
@@ -77,7 +77,7 @@ namespace NotificationCenter.Business.Services.Imp
         public async Task<List<NotificationResponse>> QueryNotificationAsync(QueryNotificationCommand queryNotificationCommand, CancellationToken cancellationToken)
         {
             var notificationRepository = _repositoryFactory.Generate<INotificationRepository>();
-            IEnumerable<Notification> notifications = await notificationRepository.GetNotificationAsync(queryNotificationCommand.UserId, queryNotificationCommand.IsSeen, queryNotificationCommand.Skip, queryNotificationCommand.Take, cancellationToken);
+            IEnumerable<Notification> notifications = await notificationRepository.GetNotificationAsync(queryNotificationCommand.Username, queryNotificationCommand.IsSeen, queryNotificationCommand.Skip, queryNotificationCommand.Take, cancellationToken);
             List<NotificationResponse> notificationResponses = notifications.Select(x => new NotificationResponse(x.CorrelationId.ToString(), x.Title.ToString(), x.Content.ToString(), x.IsSeen, x.OperationDate))
                                                                             .ToList();
 
