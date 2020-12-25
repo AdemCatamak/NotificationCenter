@@ -14,11 +14,14 @@ export class AppNotificationService {
     username: string,
     accessToken: string
   ): Observable<AppNotification[]> {
-    const headers = new HttpHeaders({ Authorize: 'Bearer ' + accessToken });
+    var reqHeader = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + accessToken,
+    });
 
     return this.httpClient.get<AppNotification[]>(
       'http://localhost:5000/users/' + username + '/notifications?take=5',
-      { headers }
+      { headers: reqHeader }
     );
   }
 }

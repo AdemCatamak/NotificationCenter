@@ -19,10 +19,9 @@ namespace NotificationCenter.Consumers
         public async Task Consume(ConsumeContext<NotificationSeenStatusChangedEvent> context)
         {
             NotificationSeenStatusChangedEvent notificationSeenStatusChangedEvent = context.Message;
-            string serializedNotification = JsonConvert.SerializeObject(notificationSeenStatusChangedEvent);
 
-            await _hubContext.Clients.User(notificationSeenStatusChangedEvent.Username)
-                             .SendAsync(NotificationHub.UPDATE_NOTIFICATION_SEEN_STATUS, serializedNotification)
+            await _hubContext.Clients.All
+                             .SendAsync(NotificationHub.UPDATE_NOTIFICATION_SEEN_STATUS, notificationSeenStatusChangedEvent)
                              .ConfigureAwait(false);
         }
     }

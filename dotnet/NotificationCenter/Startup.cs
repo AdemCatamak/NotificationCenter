@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -198,6 +201,22 @@ namespace NotificationCenter
                                                                               ValidAudience = JwtAccessTokenGenerator.JWT_AUDIENCE,
                                                                               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtAccessTokenGenerator.JWT_KEY))
                                                                           };
+                                      options.Events = new JwtBearerEvents
+                                                       {
+                                                           OnMessageReceived = context =>
+                                                                               {
+                                                                                   StringValues accessToken = context.Request.Query["access_token"];
+                                      
+                                                                                   PathString path = context.HttpContext.Request.Path;
+                                                                                   if (!string.IsNullOrEmpty(accessToken) &&
+                                                                                       (path.StartsWithSegments("/auth-hubs/")))
+                                                                                   {
+                                                                                       context.Token = accessToken;
+                                                                                   }
+                                      
+                                                                                   return Task.CompletedTask;
+                                                                               }
+                                                       };
                                   });
 
             #endregion
@@ -228,7 +247,7 @@ namespace NotificationCenter
             app.UseEndpoints(builder =>
                              {
                                  builder.MapControllers();
-                                 builder.MapHub<NotificationHub>("notification-hub");
+                                 builder.MapHub<NotificationHub>("auth-hubs/notification-hub");
                              });
         }
     }

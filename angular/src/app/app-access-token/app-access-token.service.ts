@@ -8,10 +8,11 @@ export class AppAccessTokenService {
   constructor(private httpClient: HttpClient) {}
 
   public GetAccessToken(username: string): Observable<AppAccessToken> {
+    var request = { Username: username };
+
     return this.httpClient.post<AppAccessToken>(
       'http://localhost:5000/tokens/',
-      username
+      request
     );
   }
 }
-

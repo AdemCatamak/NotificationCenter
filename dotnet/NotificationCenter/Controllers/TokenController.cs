@@ -16,11 +16,16 @@ namespace NotificationCenter.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostToken([FromBody] string? username)
+        public IActionResult PostToken([FromBody] PostTokenHttpRequest? postTokenHttpRequest)
         {
-            Username uName = new Username(username ?? string.Empty);
+            Username uName = new Username(postTokenHttpRequest?.Username ?? string.Empty);
             AccessToken accessToken = _accessTokenGenerator.Generate(uName);
             return StatusCode((int) HttpStatusCode.Created, accessToken);
+        }
+
+        public class PostTokenHttpRequest
+        {
+            public string? Username { get; set; }
         }
     }
 }
