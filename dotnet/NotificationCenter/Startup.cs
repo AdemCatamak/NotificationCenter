@@ -206,14 +206,13 @@ namespace NotificationCenter
                                                            OnMessageReceived = context =>
                                                                                {
                                                                                    StringValues accessToken = context.Request.Query["access_token"];
-                                      
                                                                                    PathString path = context.HttpContext.Request.Path;
                                                                                    if (!string.IsNullOrEmpty(accessToken) &&
-                                                                                       (path.StartsWithSegments("/auth-hubs/")))
+                                                                                       path.StartsWithSegments("/auth-hubs/"))
                                                                                    {
-                                                                                       context.Token = accessToken;
+                                                                                       context.Token = $"Bearer {accessToken}";
                                                                                    }
-                                      
+
                                                                                    return Task.CompletedTask;
                                                                                }
                                                        };
@@ -237,7 +236,11 @@ namespace NotificationCenter
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseMiddleware<GeneralExceptionHandlerMiddleware>();
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(x => x.AllowCredentials()
+                              .AllowAnyMethod()
+                              .AllowAnyHeader()
+                              .WithOrigins(new string[] {"http://localhost:4200"})
+                       );
             app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", ""); });

@@ -19,6 +19,20 @@ export class AppComponent {
     private accessTokenService: AppAccessTokenService
   ) {
     this.notificationCollection = new Array<AppNotification>();
+
+    this.notificationService.NewNotificationArrived.subscribe(
+      (data: AppNotification) => {
+        console.log(
+          'this.notificationService.NewNotificationArrived.subscribe'
+        );
+        console.log(data);
+
+        this.notificationCollection.push(data);
+        this.notificationCollection.sort(
+          (a, b) => a.operationDate.getTime() - b.operationDate.getTime()
+        );
+      }
+    );
   }
 
   ChangeUsername() {
@@ -57,6 +71,6 @@ export class AppComponent {
   }
 
   private StartObserveNotifications(accessToken: string) {
-    console.log('works');
+    this.notificationService.ObserveNotifications(accessToken);
   }
 }

@@ -3,5 +3,5 @@ export class AppNotification {
   title: string = '';
   content: string = '';
   isSeen: boolean = false;
-  operationDate: Date | null = null;
+  operationDate: Date = new Date();
 }
