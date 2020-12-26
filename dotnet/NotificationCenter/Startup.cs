@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -207,10 +208,13 @@ namespace NotificationCenter
                                                                                {
                                                                                    StringValues accessToken = context.Request.Query["access_token"];
                                                                                    PathString path = context.HttpContext.Request.Path;
-                                                                                   if (!string.IsNullOrEmpty(accessToken) &&
-                                                                                       path.StartsWithSegments("/auth-hubs/"))
+                                                                                   if (!string.IsNullOrEmpty(accessToken))
                                                                                    {
-                                                                                       context.Token = $"Bearer {accessToken}";
+                                                                                       if (path.StartsWithSegments("/auth-hubs"))
+
+                                                                                       {
+                                                                                           context.Token = $"Bearer {accessToken}";
+                                                                                       }
                                                                                    }
 
                                                                                    return Task.CompletedTask;
@@ -223,7 +227,12 @@ namespace NotificationCenter
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IAccessTokenGenerator, JwtAccessTokenGenerator>();
 
-            services.AddSignalR();
+            services.AddSignalR()
+                    .AddJsonProtocol(options =>
+                                     {
+                                         options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                                         options.PayloadSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                                     });
         }
 
         private void AddAs<TType>(IServiceCollection serviceCollection, Type baseType, ServiceLifetime serviceLifetime, params Assembly[] assemblies)

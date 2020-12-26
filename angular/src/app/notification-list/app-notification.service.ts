@@ -9,9 +9,6 @@ export class AppNotificationService {
   @Output()
   NewNotificationArrived: EventEmitter<AppNotification> = new EventEmitter<AppNotification>();
 
-  @Output()
-  NotificationStatusChanged: EventEmitter<AppNotification> = new EventEmitter<AppNotification>();
-
   private hubConnection: signalR.HubConnection | null = null;
 
   constructor(private httpClient: HttpClient) {}
@@ -57,20 +54,7 @@ export class AppNotificationService {
     }
 
     this.hubConnection.on('GetNotification', (data: AppNotification) => {
-      console.log('GetNotification');
-      console.log(data);
-
       this.NewNotificationArrived.emit(data);
     });
-
-    this.hubConnection.on(
-      'UpdateNotificationSeenStatus',
-      (data: AppNotification) => {
-        console.log('UpdateNotificationSeenStatus');
-        console.log(data);
-
-        this.NotificationStatusChanged.emit(data);
-      }
-    );
   }
 }

@@ -19,10 +19,9 @@ namespace NotificationCenter.Consumers
         public async Task Consume(ConsumeContext<NotificationCreatedEvent> context)
         {
             NotificationCreatedEvent notificationCreatedEvent = context.Message;
-            string serializedNotification = JsonConvert.SerializeObject(notificationCreatedEvent);
 
             await _hubContext.Clients.User(notificationCreatedEvent.Username)
-                             .SendAsync(NotificationHub.GET_NOTIFICATION, serializedNotification)
+                             .SendAsync(NotificationHub.GET_NOTIFICATION, notificationCreatedEvent)
                              .ConfigureAwait(false);
         }
     }

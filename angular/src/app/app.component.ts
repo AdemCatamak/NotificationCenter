@@ -22,21 +22,18 @@ export class AppComponent {
 
     this.notificationService.NewNotificationArrived.subscribe(
       (data: AppNotification) => {
-        console.log(
-          'this.notificationService.NewNotificationArrived.subscribe'
-        );
-        console.log(data);
-
         this.notificationCollection.push(data);
-        this.notificationCollection.sort(
-          (a, b) => a.operationDate.getTime() - b.operationDate.getTime()
-        );
+        this.notificationCollection.sort((a, b) => {
+          let date1 = new Date(a.operationDate);
+          let date2 = new Date(b.operationDate);
+          return date2.getTime() - date1.getTime();
+        });
+        this.notificationCollection = this.notificationCollection.splice(0, 5);
       }
     );
   }
 
   ChangeUsername() {
-    console.log('username :' + this.username);
     if (this.username == null || this.username == undefined) {
       this.username = '';
     }
