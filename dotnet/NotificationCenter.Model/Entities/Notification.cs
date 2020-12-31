@@ -11,18 +11,13 @@ namespace NotificationCenter.Model.Entities
         public NotificationTitle Title { get; private set; } = null!;
         public NotificationContent Content { get; private set; } = null!;
         public bool IsSeen { get; private set; }
+        public DateTime? SeenOn { get; private set; }
         public DateTime OperationDate { get; private set; }
         public DateTime CreatedOn { get; private set; }
 
         public Notification(NotificationCorrelationId correlationId, Username username, NotificationTitle title, NotificationContent content, DateTime operationDate)
+            : this(correlationId, username, title, content, false, operationDate, DateTime.UtcNow)
         {
-            CorrelationId = correlationId;
-            Username = username;
-            Title = title;
-            Content = content;
-            OperationDate = operationDate;
-            IsSeen = false;
-            CreatedOn = DateTime.UtcNow;
         }
 
         public Notification(NotificationCorrelationId correlationId, Username username, NotificationTitle title, NotificationContent content, bool isSeen, DateTime operationDate, DateTime createdOn)
@@ -38,6 +33,9 @@ namespace NotificationCenter.Model.Entities
 
         public void ChangeSeenStatus(bool isSeen)
         {
+            SeenOn = isSeen
+                         ? DateTime.UtcNow
+                         : null as DateTime?;
             IsSeen = isSeen;
         }
     }
