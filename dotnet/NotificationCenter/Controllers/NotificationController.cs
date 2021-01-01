@@ -67,7 +67,7 @@ namespace NotificationCenter.Controllers
 
         private void CheckTokenIsValid(string username)
         {
-            bool valid = this.HttpContext.User.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier && claim.Value == username);
+            bool valid = HttpContext.User.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier && claim.Value == username);
 
             if (!valid) throw new ForbiddenException();
         }
