@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
+using NotificationCenter.Business.Commands;
 using NotificationCenter.Business.Events;
 using NotificationCenter.Hubs;
 
@@ -19,9 +20,15 @@ namespace NotificationCenter.Consumers
         {
             NotificationCreatedEvent notificationCreatedEvent = context.Message;
 
+            NotificationResponse notificationResponse = new NotificationResponse(notificationCreatedEvent.CorrelationId,
+                                                                                 notificationCreatedEvent.Title,
+                                                                                 notificationCreatedEvent.Content,
+                                                                                 notificationCreatedEvent.IsSeen,
+                                                                                 notificationCreatedEvent.OperationDate);
+
             await _hubContext.Clients.User(notificationCreatedEvent.Username)
-                             .SendAsync(NotificationHub.GET_NOTIFICATION, notificationCreatedEvent)
-                             .ConfigureAwait(false);
+                             .SendAsync(NotificationHub.NOTIFICATION_CREATED, notificationResponse)
+                             .ConfigureAwait(continueOnCapturedContext: false);
         }
     }
 }

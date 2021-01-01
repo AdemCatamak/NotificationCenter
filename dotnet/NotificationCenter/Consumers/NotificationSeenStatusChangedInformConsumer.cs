@@ -6,22 +6,28 @@ using NotificationCenter.Hubs;
 
 namespace NotificationCenter.Consumers
 {
-    public class NotificationCreatedInformConsumer : IConsumer<NotificationCreatedEvent>
+    public class NotificationSeenStatusChangedInformConsumer : IConsumer<NotificationSeenStatusChangedEvent>
     {
         private readonly IHubContext<NotificationHub> _hubContext;
 
-        public NotificationCreatedInformConsumer(IHubContext<NotificationHub> hubContext)
+        public NotificationSeenStatusChangedInformConsumer(IHubContext<NotificationHub> hubContext)
         {
             _hubContext = hubContext;
         }
 
-        public async Task Consume(ConsumeContext<NotificationCreatedEvent> context)
+        public async Task Consume(ConsumeContext<NotificationSeenStatusChangedEvent> context)
         {
-            NotificationCreatedEvent notificationCreatedEvent = context.Message;
+            NotificationSeenStatusChangedEvent notificationSeenStatusChangedEvent = context.Message;
 
-            await _hubContext.Clients.User(notificationCreatedEvent.Username)
-                             .SendAsync(NotificationHub.SEND_NOTIFICATION, notificationCreatedEvent)
-                             .ConfigureAwait(false);
+            var notificationSeenStatusChangedResponse = new
+                    {
+                        notificationSeenStatusChangedEvent.CorrelationId,
+                        notificationSeenStatusChangedEvent.IsSeen
+                    };
+
+            await _hubContext.Clients.User(notificationSeenStatusChangedEvent.Username)
+                             .SendAsync(NotificationHub.NOTIFICATION_SEEN_STATUS_CHANGED, notificationSeenStatusChangedResponse)
+                             .ConfigureAwait(continueOnCapturedContext: false);
         }
     }
 }

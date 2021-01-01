@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AppAccessTokenService } from './app-access-token/app-access-token.service';
 import { AppNotification } from './notification-list/app-notification';
+import { AppNotificationSeenStatusChangedInfo } from './notification-list/app-notification-seen-status-changed-response';
 import { AppNotificationService } from './notification-list/app-notification.service';
 
 @Component({
@@ -20,7 +21,7 @@ export class AppComponent {
   ) {
     this.notificationCollection = new Array<AppNotification>();
 
-    this.notificationService.NewNotificationArrived.subscribe(
+    this.notificationService.NotificationReceived.subscribe(
       (data: AppNotification) => {
         this.notificationCollection.push(data);
         this.notificationCollection.sort((a, b) => {
@@ -29,6 +30,19 @@ export class AppComponent {
           return date2.getTime() - date1.getTime();
         });
         this.notificationCollection = this.notificationCollection.splice(0, 5);
+      }
+    );
+
+    this.notificationService.NotificationReceived.subscribe(
+      (data: AppNotificationSeenStatusChangedInfo) => {
+
+        console.log(data);
+
+        this.notificationCollection.forEach((x) => {
+          if (x.correlationId == data.correlationId) {
+            x.isSeen = data.isSeen;
+          }
+        });
       }
     );
   }

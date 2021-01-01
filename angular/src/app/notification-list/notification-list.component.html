@@ -3,7 +3,7 @@
 <div *ngIf="notifications.length > 0">
   <div style="margin-top: 5px; margin-bottom: 5px;" [style.background-color]="notification.isSeen ? 'transparent' : '#EEDFDE'"
     *ngFor="let notification of notifications">
-    <span>{{notification.title}}</span> - <span style="color: gray;">{{notification.content}}</span>
+    <span>{{notification.isSeen}}</span> - <span>{{notification.title}}</span> - <span style="color: gray;">{{notification.content}}</span>
   </div>
 </div>
 

@@ -3,11 +3,13 @@ import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppNotification } from './app-notification';
 import * as signalR from '@aspnet/signalr';
+import { AppNotificationSeenStatusChangedInfo } from './app-notification-seen-status-changed-response';
 
 @Injectable()
 export class AppNotificationService {
   @Output()
-  NewNotificationArrived: EventEmitter<AppNotification> = new EventEmitter<AppNotification>();
+  NotificationReceived: EventEmitter<AppNotification> = new EventEmitter<AppNotification>();
+  NotificationSeenStatusChanged: EventEmitter<AppNotificationSeenStatusChangedInfo> = new EventEmitter<AppNotificationSeenStatusChangedInfo>();
 
   private hubConnection: signalR.HubConnection | null = null;
 
@@ -53,8 +55,17 @@ export class AppNotificationService {
       return;
     }
 
-    this.hubConnection.on('GetNotification', (data: AppNotification) => {
-      this.NewNotificationArrived.emit(data);
+    this.hubConnection.on('NotificationReceived', (data: AppNotification) => {
+      this.NotificationReceived.emit(data);
     });
+
+    this.hubConnection.on(
+      'NotificationSeenStatusChanged',
+      (data: AppNotificationSeenStatusChangedInfo) => {
+        console.log(data);
+
+        this.NotificationSeenStatusChanged.emit(data);
+      }
+    );
   }
 }
