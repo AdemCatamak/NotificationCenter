@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { AppNotification } from './app-notification';
 import * as signalR from '@aspnet/signalr';
 import { AppNotificationSeenStatusChangedInfo } from './app-notification-seen-status-changed-response';
+import { GlobalVariables } from '../global-variables';
+import { HttpTransportType } from '@aspnet/signalr';
 
 @Injectable()
 export class AppNotificationService {
@@ -13,29 +15,50 @@ export class AppNotificationService {
 
   private hubConnection: signalR.HubConnection | null = null;
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient,
+    private globalVariables : GlobalVariables) {}
 
-  public GetNotifications(
-    username: string,
-    accessToken: string
-  ): Observable<AppNotification[]> {
+  public GetNotifications(): Observable<AppNotification[]> {
     var reqHeader = new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + accessToken,
+      Authorization: 'Bearer ' + this.globalVariables.AccessToken,
     });
 
     return this.httpClient.get<AppNotification[]>(
-      'http://localhost:5000/users/' + username + '/notifications?take=5',
+      'http://localhost:5000/users/' + this.globalVariables.Username + '/notifications?take=5',
       { headers: reqHeader }
     );
   }
 
-  public ObserveNotifications(accessToken: string) {
-    console.log('ObserveNotifications' + accessToken);
+  public ChangeNotificationSeenStatus(  correlationId: string, isSeen : boolean ): Observable<any> {
+    var reqHeader = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + this.globalVariables.AccessToken,
+    });
+
+    if(isSeen)
+    {
+       return this.httpClient.put(
+      'http://localhost:5000/users/' + this.globalVariables.Username + '/notifications/' + correlationId + '/seen',
+      {},
+      { headers: reqHeader }
+      );
+    }
+    else
+    {
+      return this.httpClient.delete(
+        'http://localhost:5000/users/' + this.globalVariables.Username + '/notifications/' + correlationId + '/seen',
+        { headers: reqHeader }
+        );
+    }
+  }
+
+  public ObserveNotifications() {
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl('http://localhost:5000/auth-hubs/notification-hub', {
-        accessTokenFactory: () => accessToken,
+        accessTokenFactory: () => this.globalVariables.AccessToken,
+        transport: HttpTransportType.LongPolling
       })
       .build();
 

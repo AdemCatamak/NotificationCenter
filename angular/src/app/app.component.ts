@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AppAccessTokenService } from './app-access-token/app-access-token.service';
+import { GlobalVariables } from './global-variables';
 import { AppNotification } from './notification-list/app-notification';
 import { AppNotificationSeenStatusChangedInfo } from './notification-list/app-notification-seen-status-changed-response';
 import { AppNotificationService } from './notification-list/app-notification.service';
@@ -12,12 +13,12 @@ import { AppNotificationService } from './notification-list/app-notification.ser
 export class AppComponent {
   title = 'angular';
 
-  username = '';
   notificationCollection: AppNotification[] = [];
 
   constructor(
     private notificationService: AppNotificationService,
-    private accessTokenService: AppAccessTokenService
+    private accessTokenService: AppAccessTokenService,
+    public globalVariables : GlobalVariables
   ) {
     this.notificationCollection = new Array<AppNotification>();
 
@@ -35,8 +36,6 @@ export class AppComponent {
 
     this.notificationService.NotificationSeenStatusChanged.subscribe(
       (data: AppNotificationSeenStatusChangedInfo) => {
-        console.log(data);
-
         this.notificationCollection.forEach((x) => {
           if (x.correlationId == data.correlationId) {
             x.isSeen = data.isSeen;
@@ -47,14 +46,15 @@ export class AppComponent {
   }
 
   ChangeUsername() {
-    if (this.username == null || this.username == undefined) {
-      this.username = '';
+    if (this.globalVariables.Username == null || this.globalVariables.Username  == undefined) {
+      this.globalVariables.Username  = '';
     }
 
-    if (this.username != '') {
-      this.accessTokenService.GetAccessToken(this.username).subscribe(
+    if (this.globalVariables.Username != '') {
+      this.accessTokenService.GetAccessToken(this.globalVariables.Username ).subscribe(
         (res) => {
-          this.GetNotifications(res.username, res.value);
+          this.globalVariables.AccessToken = res.value; 
+          this.GetNotifications();
         },
         (er) => {
           console.log(er);
@@ -63,16 +63,16 @@ export class AppComponent {
     }
   }
 
-  private GetNotifications(username: string, accessToken: string) {
-    this.notificationService.GetNotifications(username, accessToken).subscribe(
+  private GetNotifications() {
+    this.notificationService.GetNotifications().subscribe(
       (res) => {
         this.notificationCollection = res;
-        this.StartObserveNotifications(accessToken);
+        this.StartObserveNotifications();
       },
       (er) => {
         if (er.status == 404) {
           this.notificationCollection = [];
-          this.StartObserveNotifications(accessToken);
+          this.StartObserveNotifications();
         } else {
           console.error(er);
         }
@@ -80,7 +80,7 @@ export class AppComponent {
     );
   }
 
-  private StartObserveNotifications(accessToken: string) {
-    this.notificationService.ObserveNotifications(accessToken);
+  private StartObserveNotifications() {
+    this.notificationService.ObserveNotifications();
   }
 }
