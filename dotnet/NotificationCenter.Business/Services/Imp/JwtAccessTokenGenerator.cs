@@ -10,9 +10,9 @@ namespace NotificationCenter.Business.Services.Imp
 {
     public class JwtAccessTokenGenerator : IAccessTokenGenerator
     {
-        public const string JWT_KEY = "DropyCustomJwtKey";
-        public const string JWT_ISSUER = "DropyJwtIssuer";
-        public const string JWT_AUDIENCE = "DropyJwtIssuer";
+        public const string JWT_KEY = "CustomJwtKey";
+        public const string JWT_ISSUER = "JwtIssuer";
+        public const string JWT_AUDIENCE = "JwtAudience";
 
         public AccessToken Generate(Username username)
         {
@@ -37,7 +37,8 @@ namespace NotificationCenter.Business.Services.Imp
                                              signingCredentials: credentials);
 
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            string jwtTokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwtTokenValue;
         }
     }
 }

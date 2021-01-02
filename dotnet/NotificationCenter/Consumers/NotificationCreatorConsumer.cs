@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using NotificationCenter.Business.Commands;
 using NotificationCenter.Business.Services;
-using NotificationCenter.Consumers.IntegrationEvents;
+using NotificationCenter.ExternalIntegrationEvents;
 using NotificationCenter.Model.Exceptions.Imp;
 using NotificationCenter.Model.ValueObjects;
 

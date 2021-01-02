@@ -2,7 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using NotificationCenter.Consumers.IntegrationEvents;
+using NotificationCenter.ExternalIntegrationEvents;
 
 namespace NotificationCenter.Controllers
 {
