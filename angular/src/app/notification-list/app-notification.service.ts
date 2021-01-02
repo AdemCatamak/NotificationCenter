@@ -62,8 +62,6 @@ export class AppNotificationService {
     this.hubConnection.on(
       'NotificationSeenStatusChanged',
       (data: AppNotificationSeenStatusChangedInfo) => {
-        console.log(data);
-
         this.NotificationSeenStatusChanged.emit(data);
       }
     );

@@ -10,9 +10,9 @@ namespace NotificationCenter.Business.Services.Imp
 {
     public class JwtAccessTokenGenerator : IAccessTokenGenerator
     {
-        public const string JWT_KEY = "CustomJwtKey";
-        public const string JWT_ISSUER = "JwtIssuer";
-        public const string JWT_AUDIENCE = "JwtAudience";
+        public const string JWT_KEY = "NotificationCenter_JwtKey";
+        public const string JWT_ISSUER = "NotificationCenter_JwtIssuer";
+        public const string JWT_AUDIENCE = "NotificationCenter_JwtAudience";
 
         public AccessToken Generate(Username username)
         {

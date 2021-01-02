@@ -33,9 +33,8 @@ export class AppComponent {
       }
     );
 
-    this.notificationService.NotificationReceived.subscribe(
+    this.notificationService.NotificationSeenStatusChanged.subscribe(
       (data: AppNotificationSeenStatusChangedInfo) => {
-
         console.log(data);
 
         this.notificationCollection.forEach((x) => {
