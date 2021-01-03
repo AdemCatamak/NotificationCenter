@@ -13,10 +13,12 @@ export class AppNotificationService {
   NotificationReceived: EventEmitter<AppNotification> = new EventEmitter<AppNotification>();
   NotificationSeenStatusChanged: EventEmitter<AppNotificationSeenStatusChangedInfo> = new EventEmitter<AppNotificationSeenStatusChangedInfo>();
 
+  private baseUrl = 'http://localhost:5000';
+
   private hubConnection: signalR.HubConnection | null = null;
 
   constructor(private httpClient: HttpClient,
-    private globalVariables : GlobalVariables) {}
+    private globalVariables: GlobalVariables) { }
 
   public GetNotifications(): Observable<AppNotification[]> {
     var reqHeader = new HttpHeaders({
@@ -25,31 +27,29 @@ export class AppNotificationService {
     });
 
     return this.httpClient.get<AppNotification[]>(
-      'http://localhost:5000/users/' + this.globalVariables.Username + '/notifications?take=5',
+      this.baseUrl + '/users/' + this.globalVariables.Username + '/notifications?take=5',
       { headers: reqHeader }
     );
   }
 
-  public ChangeNotificationSeenStatus(  correlationId: string, isSeen : boolean ): Observable<any> {
+  public ChangeNotificationSeenStatus(correlationId: string, isSeen: boolean): Observable<any> {
     var reqHeader = new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + this.globalVariables.AccessToken,
     });
 
-    if(isSeen)
-    {
-       return this.httpClient.put(
-      'http://localhost:5000/users/' + this.globalVariables.Username + '/notifications/' + correlationId + '/seen',
-      {},
-      { headers: reqHeader }
+    if (isSeen) {
+      return this.httpClient.put(
+        this.baseUrl + '/users/' + this.globalVariables.Username + '/notifications/' + correlationId + '/seen',
+        {},
+        { headers: reqHeader }
       );
     }
-    else
-    {
+    else {
       return this.httpClient.delete(
-        'http://localhost:5000/users/' + this.globalVariables.Username + '/notifications/' + correlationId + '/seen',
+        this.baseUrl + '/users/' + this.globalVariables.Username + '/notifications/' + correlationId + '/seen',
         { headers: reqHeader }
-        );
+      );
     }
   }
 
