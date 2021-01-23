@@ -9,13 +9,19 @@ Notifications were created from events that occurred and notifications are store
 
 After the notifications are created, this information will be pushed to the client-side application via the SignalR package.
 
-<img src="./Doc/Img/NotificationCenter.png" alt="Notification Center"/>
+<img src="./Doc/img-video/NotificationCenter.png" alt="Notification Center"/>
 
 ## __RUN__
 
 __Way 1__
 
-The project could be executed via _docker-compose_. In case of choosing this way to run the project, you can reach swagger screen via _http://localhost:5000_.
+The project could be executed via _docker-compose_. 
+
+In case of choosing this way to run the project, you can reach swagger screen via _http://localhost:5000_. You can use the endpoints under the `/test` route for creating system events. 
+
+The welcome page will greet you when you browse the _http://localhost:4200_. When you type the name of a user, you can see the last 5 notifications of that person on the screen. When this page is open you post new events, notifications change automatically. Also, if you open two browsers and type the same username, if you change the notification status in one, it will change automatically in the other.
+
+<img src="./Doc/img-video/notification-center.gif" alt="Notification Center"/>
 
 Note: Because the rabbit-mq needs more time to be ready compared to NotificationCenter-Api, it might take a while for you to reach the endpoints after `docker-compose up` command execution.
 
