@@ -1,0 +1,10 @@
+<div style="margin-top: 10px;"></div>
+
+<div *ngIf="notifications.length > 0">
+  <div style="margin-top: 5px; margin-bottom: 5px;" *ngFor="let notification of notifications">
+    <span style="cursor: pointer;" (click)="ChangeIsSeen(notification)" [style.color]="notification.isSeen ? 'grey' : 'green'">&#9679; </span>
+    <span>{{notification.title}}</span> - <span style="color: gray;">{{notification.content}}</span>
+  </div>
+</div>
+
+<div *ngIf="notifications.length == 0">There is no notification</div>

@@ -1,0 +1,53 @@
+version: "3.4"
+
+services:
+
+  notification-center-angular-app:
+    restart: always
+    image: notification-center-angular-app:latest
+    build:
+      context: ./angular/
+      dockerfile: docker-notification-center-angular-app.Dockerfile
+    ports:
+      - 4200:4200
+    depends_on:
+      - notification-center-app
+    links:
+      - notification-center-app
+
+  notification-center-app:
+    restart: always
+    image: notification-center:latest
+    build:
+      context: ./dotnet/
+      dockerfile: docker-notification-center.Dockerfile
+    ports:
+      - 5000:80
+    depends_on:
+      - notification-center-mongo-db
+      - notification-center-rabbit-mq
+    links:
+      - notification-center-mongo-db
+      - notification-center-rabbit-mq
+
+
+  notification-center-rabbit-mq:
+    image: rabbitmq:3.7-management
+    expose:
+      - 15672
+      - 5672
+    # ports:
+      # - 15672:15672
+      # - 5672:5672
+
+
+  notification-center-mongo-db:
+    image: 'bitnami/mongodb:4.4.0'
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=notification-center-mongo-db
+      - MONGODB_ROOT_PASSWORD=password123
+    restart: always
+    expose:
+      - 27017
+    # ports:
+      # - 27017:27017
