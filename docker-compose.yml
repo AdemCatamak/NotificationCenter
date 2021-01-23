@@ -9,7 +9,7 @@ services:
       context: ./angular/
       dockerfile: docker-notification-center-angular-app.Dockerfile
     ports:
-      - 4200:80
+      - 4200:4200
     depends_on:
       - notification-center-app
     links:
@@ -36,9 +36,9 @@ services:
     expose:
       - 15672
       - 5672
-    ports:
-      - 15672:15672
-      - 5672:5672
+    # ports:
+      # - 15672:15672
+      # - 5672:5672
 
 
   notification-center-mongo-db:
@@ -49,5 +49,5 @@ services:
     restart: always
     expose:
       - 27017
-    ports:
-      - 27017:27017
+    # ports:
+      # - 27017:27017
